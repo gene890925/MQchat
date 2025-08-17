@@ -1,19 +1,22 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
-
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+
+$user = strtolower($argv[1] ?? 'user');
+$queueName = "queue_{$user}";
 
 $connection = new AMQPStreamConnection('127.0.0.1', 5672, 'guest', 'guest');
 $channel = $connection->channel();
 
-$channel->queue_declare('hello_msg', false, true, false, false);
+$channel->queue_declare($queueName, false, true, false, false);
 
-echo "等待訊息...\n";
+echo "正在接收留言：{$user}\n";
 
 while (true) {
-    $msg = $channel->basic_get('hello_msg');
+    $msg = $channel->basic_get($queueName);
     if ($msg) {
-        echo "收到: " . $msg->body . "\n";
+        $data = json_decode($msg->body, true);
+        echo "收到：「{$data['message']}」\n";
         $channel->basic_ack($msg->delivery_info['delivery_tag']);
     }
     sleep(1);
