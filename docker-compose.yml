@@ -1,12 +1,13 @@
 version: '3.8'
-
 services:
   php:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "80:80"
     volumes:
-      - .:/app
+      - .:/var/www/html
     depends_on:
       - rabbitmq
     tty: true
