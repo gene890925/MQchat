@@ -7,11 +7,10 @@ $channel = $connection->channel();
 
 $channel->exchange_declare('events', 'topic', false, true, false);
 $channel->queue_declare('log_queue', false, true, false, false);
-$channel->queue_bind('log_queue', 'events', 'comments.#'); // 接收所有留言相關事件
+$channel->queue_bind('log_queue', 'events', 'comments.#');
 
 echo "留言紀錄服務啟動...\n";
 
-// 使用簡單的迴圈來持續檢查訊息
 while (true) {
     $msg = $channel->basic_get('log_queue');
     if ($msg) {
@@ -19,6 +18,7 @@ while (true) {
         $logEntry = "[" . date('Y-m-d H:i:s') . "] {$data['name']}：{$data['message']}\n";
         file_put_contents("comments.log", $logEntry, FILE_APPEND);
         echo "已記錄留言：{$data['name']}\n";
+        echo "留言內容：{$data['message']}\n";
         $channel->basic_ack($msg->delivery_info['delivery_tag']);
     }
     sleep(1);

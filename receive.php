@@ -2,7 +2,8 @@
 require_once __DIR__ . '/vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-$user = strtolower($argv[1] ?? 'user');
+//啟動格式php receive.php user
+$user = strtolower($argv[1]);
 $queueName = "queue_{$user}";
 
 $connection = new AMQPStreamConnection('127.0.0.1', 5672, 'guest', 'guest');
